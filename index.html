@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="https://cdn.pixabay.com/photo/2016/07/29/21/42/school-1555910_960_720.png" />
+  <title>Polynomial Calculator</title>
+  <style>
+    /* set body and html padding and margin 0 to attach elements to them edges*/
+    body,
+    html {
+      padding: 0;
+      margin: 0;
+    }
+
+    /* Style the navigation bar that contains label and more options button */
+    .navbar {
+      background-color: rgb(23, 23, 23);
+      color: white;
+      box-shadow: 1px 2px 11px 3px rgba(255, 255, 255, 0.647);
+      padding-right: 15px;
+      padding-left: 15px;
+      padding-bottom: 10px;
+      padding-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: none;
+    }
+
+    /* Style the buttons [create a triangle facing right] */
+    #more-options {
+      background: none;
+      border: none;
+      width: 0;
+      height: 0;
+      border-top: 1vmax solid transparent;
+      border-left: 2vmax solid red;
+      border-bottom: 1vmax solid transparent;
+      cursor: pointer;
+      padding: 0;
+      transition: all 0.3s ease-in-out;
+    }
+
+    /* Change button to down faced when button is clicked */
+    #more-options.clicked {
+      rotate: 90deg;
+      transition: all 0.3s ease-in-out;
+    }
+
+    /* Start styling the dialog box */
+    #dialog-box {
+      display: none;
+      /* No display when more-options button is not clicked */
+
+    }
+
+    /*Animation for dialog box*/
+    @keyframes animateDialogBox {
+      0% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(20%);
+      }
+    }
+
+    /* Styles when dialog box when opened */
+    #dialog-box.open {
+      display: block;
+      position: absolute;
+      box-shadow: 0 4px 8px rgba(255, 255, 255, 0.763);
+      width: 18vw;
+      min-height: 20vw;
+      height: fit-content;
+      border: 3px transparent black;
+      border-radius: 5%;
+      left: 80.7%;
+      margin-top: 5px;
+      animation: animateDialogBox 1s ease;
+      padding: 4px;
+      background-image: linear-gradient(to left, #6439FF, #4F75FF, #00CCDD, #7CF5FF);
+    }
+
+    /* Styles for the label section */
+    #label-polynomial-calc {
+      font-size: 3vw;
+      font-weight: bold;
+      border: 2px solid black;
+      box-shadow: 1px 2px 3px 2px black;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+
+    .input-content-div {
+      font-size: 1.2rem;
+      color: white;
+      padding-left: 10px;
+    }
+
+    .input-styles {
+      font-size: small;
+      padding: 3px;
+      margin-top: 2vw;
+      margin-bottom: 1vw;
+      min-width: 100px;
+      width: 8%;
+      height: 1.5vw;
+      border: 2px solid black;
+      border-radius: 10px;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .input-styles:hover {
+      border: 2px solid #008CBA;
+      background-color: aquamarine;
+      transition: all 0.1s ease-in;
+    }
+
+    .input-styles:focus {
+      border: 2px solid #008CBA;
+      background-color: aquamarine;
+      transition: all 0.1s ease-in;
+    }
+
+    .result-div {
+      font-size: 120%;
+      margin: 1vw;
+      padding: 2%;
+      color: white;
+      /* set white for better visibility is dark background */
+      border: 3px solid white;
+      border-radius: 100px;
+      transition: all 0.3s ease-in;
+    }
+
+    @keyframes gradientAnimation {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    .result-div:hover {
+      color: black;
+      border: transparent;
+      transition: all 0.2s ease-in-out;
+      border-radius: 100px;
+      cursor: default;
+      /* Remove or place background-color before the gradient */
+      background: linear-gradient(270deg, #10439f, #874ccc, #c65bcf, #f27bbd);
+      background-size: 800% 800%;
+      /* Ensure the gradient is large enough to move */
+      animation: gradientAnimation 3s ease infinite;
+      /* Apply the animation */
+    }
+
+    #value-polynomial:hover {
+      cursor: progress;
+    }
+
+    /* Style submit button [default styles] */
+    #submit-polynomial {
+      padding: 2px;
+      margin: 10px;
+      min-width: fit-content;
+      min-height: fit-content;
+      width: 6vw;
+      height: 4vw;
+      font-size: 100%;
+      border-radius: 20%;
+      background-color: #008CBA;
+      color: white;
+      border: 3px solid black;
+      transition: all 0.2s ease-in-out;
+      box-shadow: -1px 2px 2px 1px white;
+    }
+
+    /* Submit button when hovered over */
+    #submit-polynomial:hover {
+      font-weight: bold;
+      background-color: #00ba76;
+      color: black;
+      border: 3px solid white;
+      box-shadow: none;
+      transition: all 0.2s ease-in-out;
+    }
+
+    /* Animation to make the button smaller when pressed */
+    @keyframes submitButtonAnimation {
+      0% {
+        transform: scale(1);
+      }
+
+      20% {
+        transform: scale(0.9, 1);
+      }
+
+      50% {
+        transform: scale(0.85, 0.95)
+      }
+
+      80% {
+        transform: scale(0.8, 0.9);
+      }
+
+      100% {
+        transform: scale(0.7, 0.8);
+      }
+
+    }
+
+    #submit-polynomial.pressedDown {
+      color: black;
+      background-color: #fff;
+      animation: submitButtonAnimation 0.2s ease-in;
+      /* Implement the animation to make it smalled [while it is pressed] */
+      transform: scale(0.7, 0.8);
+      /* Retain the size till button is pressed */
+    }
+  </style>
+</head>
+
+<body style="background:rgba(0, 0, 0, 0.911)">
+  <div class="navbar">
+    <label id="label-polynomial-calc">Polynomial Calculator</label>
+    <button type="button" id="more-options"></button>
+  </div>
+  <div id="dialog-box">
+    <p style="font-size:2vw; color:#000; text-align: center;">Rules of Usage</p>
+    <ul>
+      <li>The polynomial must be only in the form of ax^n ± bx^m ...</li>
+      <li>1 space gap between signs and terms <br />e.g "7x ± 9" the space between x, ± and 9 is necessary</li>
+      <li>Only use the variable x in the expressions</li>
+      <li>For terms with coefficient as 1, explicitly mention the coefficient. E.g 1x^3</li>
+      <li>The exponents are always natural numbers</li>
+      <li>The coefficients are always natural numbers</li>
+    </ul>
+  </div>
+  <div class="input-content-div">
+    Polynomial: <input type="text" placeholder="e.g 7x^3 - 9x^2 + 8x - 3" class="input-styles" id="polynomial"
+      style="width:35%;" /> <br />
+    Value of x: <input type="number" placeholder="Any Integer" id="variable" class="input-styles" />
+    <br /> <button type="button" id="submit-polynomial">SUBMIT</button>
+  </div>
+
+  <div class="result-div">
+    <label style="font-family:'Times New Roman', Times, serif; font-size:3vw;">VALUE OF POLYNOMIAL</label>
+    <p id="value-polynomial">Loading...</p>
+  </div>
+
+  <script>
+    // typescript compiled code [functions converted from ts to js]
+    var getTerms = function (polynomial) {
+      var terms = polynomial.match(/(\d+)x\^(\d+)/g);
+      var degree1term = polynomial.match(/(\d+)x(?!\^(\d+))/g);
+      var constant = polynomial.match(/([+-]?\d+)(?!.*x)/g);
+      var coeff_and_degrees = [];
+      // get degree and coefficient values for terms degree >1
+      if (terms) {
+        for (var _i = 0, terms_1 = terms; _i < terms_1.length; _i++) {
+          var term = terms_1[_i];
+          var _a = term.split("x^"), coefficient = _a[0], degree = _a[1];
+          coeff_and_degrees.push({ coefficient: parseInt(coefficient), degree: parseInt(degree) });
+        }
+      }
+      // get degree and coefficient values for degree 1 term
+      if (degree1term) {
+        for (var _b = 0, degree1term_1 = degree1term; _b < degree1term_1.length; _b++) {
+          var term = degree1term_1[_b];
+          var coefficient = term.split("x");
+          coeff_and_degrees.push({ coefficient: parseInt(coefficient[0]), degree: 1 });
+        }
+      }
+      // get the constant term
+      if (constant) {
+        for (var _c = 0, constant_1 = constant; _c < constant_1.length; _c++) {
+          var term = constant_1[_c];
+          coeff_and_degrees.push({ coefficient: parseInt(term), degree: 0 });
+        }
+      }
+      return coeff_and_degrees;
+    };
+    var getSigns = function (polynomial, terms) {
+      var _loop_1 = function (term) {
+        var regex = /[+-]? (\d+)x\^(\d+)/g;
+        var matches = polynomial.match(regex);
+        if (matches) {
+          for (var _d = 0, matches_1 = matches; _d < matches_1.length; _d++) {
+            var match = matches_1[_d];
+            var containsTerm = match.includes("".concat(term.coefficient, "x^").concat(term.degree));
+            if (containsTerm) {
+              var termStartIndex = match.indexOf("".concat(term.coefficient, "x^").concat(term.degree));
+              var sign = match.replace(match.slice(termStartIndex, match.length), "");
+              var termObj = terms.find(function (t) { return t.coefficient === term.coefficient && t.degree === term.degree; });
+              termObj.sign = sign[0];
+            }
+          }
+        }
+      };
+      // get signs for the ones in the form [+-] ax^n ... [+-] bx^,
+      for (var _i = 0, terms_2 = terms; _i < terms_2.length; _i++) {
+        var term = terms_2[_i];
+        _loop_1(term);
+      }
+      // get sign for the term 1st term [if it isn't preceded by a sign]
+      for (var _a = 0, terms_3 = terms; _a < terms_3.length; _a++) {
+        var term = terms_3[_a];
+        var match = polynomial.match(/^\d+x\^\d+/g);
+        if (match) {
+          term.sign = '+';
+          break;
+        }
+      }
+      // get sign for the term with degree one [usually in the form of ax, where a is coefficient and x is variable]
+      for (var _b = 0, terms_4 = terms; _b < terms_4.length; _b++) {
+        var term = terms_4[_b];
+        if (term.degree !== 1)
+          continue; // skip if degree of the term is 1
+        if (polynomial.includes("".concat(term.coefficient, "x"))) {
+          var termStartIndex = polynomial.indexOf("".concat(term.coefficient, "x"));
+          var signIndex = termStartIndex - 2;
+          term.sign = polynomial[signIndex];
+        }
+      }
+      // get sign for constant terms;
+      for (var _c = 0, terms_5 = terms; _c < terms_5.length; _c++) {
+        var term = terms_5[_c];
+        if (term.degree !== 0)
+          continue; // skip if degree of the term is not 0
+        if (polynomial.includes("".concat(term.coefficient))) {
+          var termStartIndex = polynomial.indexOf("".concat(term.coefficient));
+          var signIndex = termStartIndex - 2;
+          term.sign = polynomial[signIndex];
+        }
+      }
+      return terms;
+    };
+    var getValPolynomial = function (termObj, x) {
+      var val = 0;
+      for (var _i = 0, termObj_1 = termObj; _i < termObj_1.length; _i++) {
+        var obj = termObj_1[_i];
+        if (obj.coefficient && obj.degree) {
+          var sign = obj.sign;
+          if (sign === "+") {
+            val = val + (obj.coefficient * Math.pow(x, obj.degree));
+          }
+          if (sign === "-") {
+            val = val + (-obj.coefficient * Math.pow(x, obj.degree));
+          }
+          if (sign === undefined) {
+            val = val + obj.coefficient * x;
+          }
+        }
+      }
+      // add them constants to the val
+      for (var _a = 0, termObj_2 = termObj; _a < termObj_2.length; _a++) {
+        var obj = termObj_2[_a];
+        if (obj.degree === 0) {
+          if (obj.sign === "+") {
+            val = val + obj.coefficient;
+          }
+          if (obj.sign === "-") {
+            val = val - obj.coefficient;
+          }
+        }
+      }
+      return val;
+    };
+
+    // handle submition of polynomial and value of variable
+    const submitButton = document.getElementById("submit-polynomial");
+    submitButton.addEventListener("mousedown", () => {
+      submitButton.classList.toggle("pressedDown");
+    })
+    submitButton.addEventListener("mouseup", () => {
+      submitButton.classList.remove("pressedDown");
+    })
+
+    // handle enter key press in the polynomial input field to simulate form submission
+    document.getElementById("polynomial").addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        document.getElementById("submit-polynomial").click(); // simulate click event for form submission
+      }
+    })
+    document.getElementById("variable").addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        document.getElementById("submit-polynomial").click(); // simulate click event for form submission
+      }
+    })
+
+    // handle submission and display the value of the polynomial
+    submitButton.addEventListener("click", () => {
+      const expression = document.getElementById("polynomial").value;
+      const x = document.getElementById("variable").value;
+
+      const terms = getTerms(expression);
+      const signedTerms = getSigns(expression, terms);
+      const val = getValPolynomial(signedTerms, parseInt(x));
+
+      const text = document.getElementById("value-polynomial");
+
+      text.textContent = val;
+
+    })
+
+    const dialogBox = document.getElementById("dialog-box");
+
+    const moreOptionsButton = document.getElementById("more-options");
+    moreOptionsButton.addEventListener("click", () => {
+      moreOptionsButton.classList.toggle("clicked"); // toggle clicked or remove clicked
+
+      dialogBox.classList.toggle("open");
+    })
+
+  </script>
+</body>
+
+</html>
